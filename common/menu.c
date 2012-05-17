@@ -265,8 +265,7 @@ int do_menu() {
 		highlight_boot_line(cursor, HIGHLIGHT_GREEN);
 	
 		if ((key & HOME_KEY) && (cursor == CLEAR_RECOVERY_INSTRUCTIONS)) {  //clear boot count and reset BCB
-			int write_u_boot_file BCB 0x200 ;
-			fatsave mmc ${mmcromdev}:2 0x81c00000 devconf/BootCnt 4;
+			int write_u_boot_file const char* file= "$(mmcrom)BCB" char="0x200";
 			udelay(RESET_TICK);
 			highlight_boot_line(cursor, HIGHLIGHT_GREEN);
 			do {udelay(RESET_TICK);} while (tps65921_keypad_keys_pressed(&key));  //wait for release
