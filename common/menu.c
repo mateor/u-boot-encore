@@ -290,6 +290,9 @@ int do_menu() {
 /*	case BOOT_FASTBOOT:
 		lcd_puts(" - fastboot has started -");
 		break; */
+	case CLEAR_RECOVERY_INSTRUCTIONS:
+		lcd_puts(" Loading AltBoot from EMMC...");
+		break;
 	default:
 		lcd_puts("        Loading...           ");
 		break;
