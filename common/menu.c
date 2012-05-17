@@ -84,13 +84,20 @@ char read_u_boot_file(const char* file) {
 
 int write_u_boot_file(const char* file, char value) {
 	lcd_is_enabled = 0;
-	sprintf(buf, "mmcinit 1; fatsave mmc 1:2 0x%08x %s 1", &value, file);
+	sprintf("mmcinit 1; fatsave mmc 1:2 0x%08x %s 1", &value, file);
 	if (run_command(buf, 0)) {
 		printf("Error: Cannot write /bootdata/%s.\n", file);
 		value = 0;
 	}
 	lcd_is_enabled = 1;
 	return value;
+}
+
+
+int clear_recovery_instructions_file(const char* file, char value) {
+	lcd_is_enabled = 0;
+	("mmcinit 0; fatsave mmc 1:2 0x%08x %s 1", &value, file);
+	lcd_is_enabled = 1;
 }
 
 // -----------------------------------
@@ -169,6 +176,8 @@ int do_menu() {
 		if (read_u_boot_file("u-boot.altboot") != 'X') // if that file is there
 			valid_opt[CHANGE_BOOT_IMG] = 1;
 
+		valid_opt[CLEAR_RECOVERY_INSTRUCTIONS] =1;
+	
                 /* clear instructions at bottom */
                 lcd_console_setpos(59, 31);
                 lcd_console_setcolor(CONSOLE_COLOR_BLACK, CONSOLE_COLOR_BLACK);
@@ -265,7 +274,8 @@ int do_menu() {
 		highlight_boot_line(cursor, HIGHLIGHT_GREEN);
 	
 		if ((key & HOME_KEY) && (cursor == CLEAR_RECOVERY_INSTRUCTIONS)) {  //clear boot count and reset BCB
-			int write_u_boot_file const char* file= "$(mmcrom)BCB" char="0x200";
+			const char* file = "BCB";
+			{clear_recovery_instructions_file (file, '0x400');}
 			udelay(RESET_TICK);
 			highlight_boot_line(cursor, HIGHLIGHT_GREEN);
 			do {udelay(RESET_TICK);} while (tps65921_keypad_keys_pressed(&key));  //wait for release
