@@ -37,7 +37,7 @@
 //	lcd_bl_set_brightness(255);
 //	lcd_console_init();
 
-#define NUM_OPTS		9  //number of boot options
+#define NUM_OPTS		10  //number of boot options
 
 char *opt_list[NUM_OPTS] = 	{" Internal eMMC Normal     ",
 				 " Internal eMMC Recovery   ",
