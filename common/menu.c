@@ -263,7 +263,15 @@ int do_menu() {
 		} while (!(key & HOME_KEY) || (cursor == CHANGE_BOOT_DEV) || (cursor == CHANGE_BOOT_IMG));  // power button to select
 
 		highlight_boot_line(cursor, HIGHLIGHT_GREEN);
-
+	
+		if ((key & HOME_KEY) && (cursor == CLEAR_RECOVERY_INSTRUCTIONS)) {  //clear boot count and reset BCB
+			dd if=/dev/zero of=/rom/bcb bs=1 count=1088 && 
+			dd if=/dev/zero of=/rom/devconf/BootCnt bs=1 count=4 ;
+			udelay(RESET_TICK);
+			highlight_boot_line(cursor, HIGHLIGHT_GREEN);
+			do {udelay(RESET_TICK);} while (tps65921_keypad_keys_pressed(&key));  //wait for release
+		}	
+ 	
  	lcd_console_setpos(MENUTOP+NUM_OPTS+2, 25);
 	lcd_console_setcolor(CONSOLE_COLOR_CYAN, CONSOLE_COLOR_BLACK);
 
@@ -291,7 +299,7 @@ int do_menu() {
 		lcd_puts(" - fastboot has started -");
 		break; */
 	case CLEAR_RECOVERY_INSTRUCTIONS:
-		lcd_puts(" Loading AltBoot from EMMC...");
+		lcd_puts(" Clearing Boot Count and Resetting BCB...");
 		break;
 	default:
 		lcd_puts("        Loading...           ");
