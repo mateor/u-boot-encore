@@ -347,14 +347,14 @@ fi;  \
 fatload mmc ${mmcromdev}:2 0x81c00000 BCB 0x1000;\
 if itest.l $? -ne 0; then\
   echo Missing BCB forces recovery mode;\
-  setenv bootvar recoveryboot;\
+  normalboot;\
 elif itest.l 0x$filesize -lt 0x200; then\
   echo Empty BCB forces recovery mode;\
-  setenv bootvar recoveryboot;\
+  normalboot;\
 elif itest.b *0x81c00040 -ne 0 &&\
  itest.s *0x81c00040 == \"recovery\"; then\
   echo BCB forces recovery mode;\
-  setenv bootvar recoveryboot;\
+  normalboot;\
 fi" \
 	"\0" \
 \
