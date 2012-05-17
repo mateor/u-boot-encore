@@ -49,6 +49,7 @@ char *opt_list[NUM_OPTS] = 	{" Internal eMMC Normal     ",
 				 " Default Boot From:       ",
 				 "       Device: ",
 				 "        Image: ",
+				 " Clear Recovery Instructions ",
 				};
 
 // Shared sprintf buffer for fatsave/load
