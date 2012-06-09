@@ -84,7 +84,7 @@ char read_u_boot_file(const char* file) {
 
 int write_u_boot_file(const char* file, char value) {
 	lcd_is_enabled = 0;
-	sprintf("mmcinit 1; fatsave mmc 1:2 0x%08x %s 1", &value, file);
+	sprintf(buf, "mmcinit 1; fatsave mmc 1:2 0x%08x %s 1", &value, file);
 	if (run_command(buf, 0)) {
 		printf("Error: Cannot write /bootdata/%s.\n", file);
 		value = 0;
@@ -93,11 +93,15 @@ int write_u_boot_file(const char* file, char value) {
 	return value;
 }
 
-
-int clear_recovery_instructions_file(const char* file, char value) {
+int clear_recovery_instructions(const char* file, char value) {
 	lcd_is_enabled = 0;
-	("mmcinit 0; fatsave mmc 1:2 0x%08x %s 1", &value, file);
+	sprintf(buf, "mmcinit 1; fatsave mmc 1:2 0x%08x %s 777", &value, file);
+	if (run_command(buf, 0)) {
+		printf("Error: Cannot write /bootdata/%s.\n", file);
+		value = 0;
+	}
 	lcd_is_enabled = 1;
+	return value;
 }
 
 // -----------------------------------
@@ -156,6 +160,7 @@ int do_menu() {
 		int ret = 0;
 
 //		valid_opt[BOOT_FASTBOOT] = 1;
+		
 
 		if (check_device_image(DEV_EMMC, "uImage") && check_device_image(DEV_EMMC, "uRamdisk"))
 			valid_opt[BOOT_EMMC_NORMAL] = 1;
@@ -177,7 +182,7 @@ int do_menu() {
 			valid_opt[CHANGE_BOOT_IMG] = 1;
 
 		valid_opt[CLEAR_RECOVERY_INSTRUCTIONS] =1;
-	
+
                 /* clear instructions at bottom */
                 lcd_console_setpos(59, 31);
                 lcd_console_setcolor(CONSOLE_COLOR_BLACK, CONSOLE_COLOR_BLACK);
@@ -259,6 +264,8 @@ int do_menu() {
 			do {udelay(RESET_TICK);} while (tps65921_keypad_keys_pressed(&key));  //wait for release
 		}
 
+
+
 		if ((key & HOME_KEY) && (cursor == CHANGE_BOOT_IMG)) {  //selected modify image
                         const char* file = "u-boot.altboot";
 			if (read_u_boot_file(file) == '1') {write_u_boot_file(file, '0');}
@@ -272,15 +279,15 @@ int do_menu() {
 		} while (!(key & HOME_KEY) || (cursor == CHANGE_BOOT_DEV) || (cursor == CHANGE_BOOT_IMG));  // power button to select
 
 		highlight_boot_line(cursor, HIGHLIGHT_GREEN);
-	
-		if ((key & HOME_KEY) && (cursor == CLEAR_RECOVERY_INSTRUCTIONS)) {  //clear boot count and reset BCB
-			const char* file = "BCB";
-			{clear_recovery_instructions_file (file, '0x400');}
+
+if ((key & HOME_KEY) && (cursor == CLEAR_RECOVERY_INSTRUCTIONS)) {  //Reset BCB
+                        const char* file = "BCB";
+			{clear_recovery_instructions(file, '0');}
 			udelay(RESET_TICK);
 			highlight_boot_line(cursor, HIGHLIGHT_GREEN);
 			do {udelay(RESET_TICK);} while (tps65921_keypad_keys_pressed(&key));  //wait for release
-		}	
- 	
+		}
+
  	lcd_console_setpos(MENUTOP+NUM_OPTS+2, 25);
 	lcd_console_setcolor(CONSOLE_COLOR_CYAN, CONSOLE_COLOR_BLACK);
 
