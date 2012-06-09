@@ -53,4 +53,4 @@ enum image_dev {
 int check_device_image(enum image_dev device, const char* file);
 char read_u_boot_file(const char* file);
 int write_u_boot_file(const char* file, char value);
-int clear_recovery_instructions_file(const char* file, char value);
+int clear_recovery_instructions(const char* file, char value);
